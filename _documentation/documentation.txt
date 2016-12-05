@@ -1,0 +1,105 @@
+***********************************************************************************************************
+Why?
+***********************************************************************************************************
+Because tea lovers get no love!  There are tons of coffee discussion boards, offices always have good coffee
+but awful tea, and cafes are even sadly referred to as "coffee shops!"  But there is an underground following 
+for tea: people who dislike coffee, prefer tea to coffee, or just flat out love tea.  This site is meant to
+give one central location for consumer-quality loose-leaf teas.  It is the first tangible step in creating a
+series of non-profit "TEA shops" (yes, also serving coffee...) in the Boston area to serve as a home-base for
+the community to serve the local community.  Jeremiah 29:7 calls us to serve our community for the sake of
+its people: "But seek the welfare of the city where I have sent you into exile, and pray to the Lord on its 
+behalf, for in its welfare you will find your welfare."
+
+
+***********************************************************************************************************
+Technologies learned/implemented
+***********************************************************************************************************
+sqlite - learned via CS50, exposure before course
+HTML & CSS - learned via CS50, extended with project
+Bootstrap templating - learned via CS50, extended with project
+Python - learned via CS50, extended with project
+Python bs4 module - learned with project
+Django - learned with project
+
+
+***********************************************************************************************************
+Installation instructions
+***********************************************************************************************************
+
+1. Install requirements.  From the _documentation.txt folder, run:
+        pip3 install -r requirements.txt
+2. Run scraper.  From the parent TeaFinder directory, run:
+        python Scraper.py
+3. Start the web service on the host server.  In the case of launchin on CS50 IDE, run:
+        python manage.py runserver $IP:$PORT
+4. Load the URL returned.  Example URL:
+        https://ide50-jaketwalker.cs50.io/
+
+Scheduling instructions on primary installation server (optional).
+S1. Scheduling Scraper.py.  Should be scheduled with frequent periodicity, ideally daily during a period
+    of highest downtime on the website.  It is not suggested to run any less frequently than weekly.  
+    Suggested scheduling is to run at 2AM EST nightly.
+
+
+***********************************************************************************************************
+Design & Code Diagram/Discussion
+***********************************************************************************************************
+--Summary below, but please see design.txt for a more complete dicussion--
+Scraper:
+    Scraper.py - main entrypoint for scraper and where new site-specific templates are added or removed
+    ScraperDatabase.py - only connection of the scraper to the sqlite database teas.db.  Responsible for
+        all inserts/updates/selects in teas.db
+    ScrapterTemplates/CommonScraper.py - common classes and functions for the site-specific templates
+    ScrapterTemplates/ - contains site-specific templates used to scrape sellers of teas.  Two have been
+        created for the purpose of the first release: TeaSource, a Minnesota compnay, and Camellia
+        Sinensis based in Montreal.
+
+Django App:
+    models.py: contains class objects to face specific tables and views created in teas.db.
+    views.py: contains the backend for the TeaFinder web app.  Points to a base "index" homepage,
+    a tea list page for each of the tea classifications, and a very basic search page.  Search page
+    currently has a placeholder for a more robust searching mechanism in helpers/SearchFunctions.py.
+    urls:
+        / - index page
+        /tealist/<Black Tea, Green Tea, etc> - page displaying all tea types of a given classification
+        /search - search page
+        /search/results - displays the search results in pointing to the same HTML template as the
+            tealist site
+
+Database introduction:
+    TeaTypes: defines the high-level product categories
+    Sources: defines the scraper data sources
+    Tags: unique set of tags that teas can be assigned to
+    Teas: defined by a Tea ID, but has a unique name restriction
+    TeasSources: details of each product, tied by a FK to each Teas and Sources.  Stores cost info,
+        purchase links, and image snapshots.
+    TeasTags: ties by FK to each a tea and one or more tags.
+    TeasSourcesView: primary view used to generate HTML tables on Django sites
+
+***********************************************************************************************************
+User-facing Instructions (after hosted and external-facing)
+***********************************************************************************************************
+The wesbite is split into three parts:
+    --Homepage: "About Us"
+    --Tea Lists: Selections of our most popular of each tea classifications.  Filter from a broad
+        selection of Green Teas, Black Teas, and other different types of quality loose-leaf teas.
+    --TeaFinder: For a more specific criteria, search with a basic search string, classification,
+        and different tags.  Each tag represents a quality of each tea.  All are optional, but allow
+        for a much more specific finder.  Search by:
+            Text - search by a free-text entry matching on each individual word entered.
+            Classifications - filter the results by one or more types of tea
+            Tags - further filter by one or more tags.  These are an "and" criteria: the more you select, 
+                the more tailored your results!
+
+***********************************************************************************************************
+Program admin instructions
+***********************************************************************************************************
+Admin site:
+    --An admin site has been created for two main purposes: adding new data sources and new tea 
+        classifications.
+
+Scraper instructions:
+    --Once scheduled on a host server, Scraper.py will do the rest.
+    --To add a new scraper, write and install a scraper template:
+        --Create a scraper in the ScraperTemplates folder
+        --Add it to Scraper.py.  Instructions for adding are included in the script.

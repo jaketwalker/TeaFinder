@@ -1,0 +1,39 @@
+{% extends "teas/baselayout.html" %}
+
+{% block pageheader %}
+    <h3>Tea Finder</h3>
+{% endblock %}
+
+{% block main %}
+    <p>Enter search criteria below.  All fields are optional.</p>
+    <br>
+    <!--<form id="searchbox" method="get" action="{% url 'tealist' 'Green Tea' %}">-->
+    <form id="searchbox" method="post" action="{% url 'search_results' %}">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="search-text">Enter Search Criteria:</label>
+            <textarea class="form-control search-text" id="search-text" rows="1" name="search_text"></textarea>
+        </div>
+        <div class="form-group" id="left-column">
+            <label for="type-select">Select Types of Teas:</label>
+            <select multiple class="form-control multiple-select" id="type-select" name="tea_types">
+                {% for type in tea_types %}
+                    <option value={{ type.ID }}>{{ type.TeaType }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-check" id="right-column">
+            <label class="form-check-label" style="width:100%">Select Tags:</label>
+            {% for tag in tags %}
+                <label class="form-check-label checkboxes">
+                    <input type="checkbox" class="form-check-input" name="tags[]" value={{ tag.ID }}>
+                    {{ tag.TagName }}
+                    <br>
+                </label>
+            {% endfor %}
+        </div>
+        <div class="form-check search-button-div">
+            <button type="submit" class="btn btn-primary search-button">Search</button>
+        </div>
+    </form>
+{% endblock %}

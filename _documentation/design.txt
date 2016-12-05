@@ -1,0 +1,109 @@
+***********************************************************************************************************
+Technical Documentation - Scraper.py
+***********************************************************************************************************
+Scraper.py is the main entrypoint of a program written to scrape a predefined set of product websites for
+details about their products.  Contained in the ScraperTemplates child directory are a Python templates 
+for each site employing the bs4 mdoule to scrape product information from their website, and then using
+the ScraperDatabase.py script to insert/update our product database using that information.  The following
+documentation describes the structure and implentation of each module and script.
+
+ScraperTemplates/CommonScraper.py
+Contains helper functions and a Product class employed by each of the scraper templates.  Any functions related
+to how scrapers will work that affect more than one or two websites should be kept here.  This module should 
+remain independent from the database implentation.
+
+ScraperTemplates/...
+Other ...Scraper.py files in this directory are specific scrapers designed for each webpage.  Each uses the 
+bs4 Python module to instantiate a BeautifulSoup class module over the underlying HTML of each webpage.  
+Generally, this leads to scraping the URLs for each product detail page, and then iterating over the page to
+instantiate the Product class from the CommonScraper module.  
+Design Explanation: Each of the two scrapers that have been created for the first implentation of this program 
+are structured differently and therefore the two scrapers were not abstracted any further.  Upon further review
+of other websites and as patterns emerge, many of these functions can likely be factored out into the CommonScraper
+module.  Expected pattern is likely to write a generic get_description(), get_name(), etc function.  The largest
+downside of this and why this wasn't implented so far is that it is more optimal from a runtime perspective to
+load all of the product HTML tags first and once and then parse it instead of needing to continually pass in the
+base HTML into some generic function.
+
+ScraperDatabase.py
+This is the only of the scraper modules that is database-specific.  Upon changing the database, this file needs
+to be updated to cover the intracacies of that particular database.  Connecting to the teas.db sqlite database,
+it implements a ProductDB class that updates the respective database when instantiated.  Also included are various 
+helper functions used to insert or select out of the database.  Lastly, it contains a function designed to deactivate
+products not updated recently.
+Testing: Includes an _test() function designed to test and make sure changes do not break basic assumptions of the
+databases.
+
+Scraper.py
+Entry point for the scraper program.  Designed to easily onboard a new website scraper.  To onboard a new website,
+import the site-specific template from the ScraperTemplates directory and then add the imported function to the 
+SCAPER_LIST list.  Scraper.py should be scheduled with a task scheduler program.
+
+
+***********************************************************************************************************
+Technical Documentation - Django web app
+***********************************************************************************************************
+Web app was designed for four main sites with the ability to add further developments on its second relaese.
+
+1. Main page - This page is the main index page.  Was designed to eventually store the mission statement for 
+    the parent company, as well as location details and an About Me section.
+2. Tea Lists - This includes a page for each of the product classifications ("Green Tea", "Black Tea", etc.).
+    Pages load all active teas ordered by cost.
+3. Search for teas - This is the main user-facing page with room for much advanced functionality in the second
+    release of the app.  The TeaFinder is implemented in the views.py in three parts:
+        (a) Search string: this points to a helper function in teas/helpers/SearchFunctions.py (see design notes)
+        (b) Tea classifications: this is set up to allow multiple types of tea to be chosen.  See the stack overflow
+            link referenced in views.py for details of how the WHERE clause of the SQL statement has been iterated
+            over to allow "WHERE tea_type = 'Green Tea" or tea_type = 'Black Tea'" for an unknown but discrete number
+            of tea types. (see design notes)
+        (c) Tea tags: these tags are designed to further help users filter down.  Hopeful to expand this further into 
+            sub-tags and build machine learning into the scraper module to assign tags automatically.
+
+
+Design explanations:
+    --Django and sqlite were chosen for their flexibility, ease of enhancement, and portability.  Downside of
+    sqlite is its storage of many common data patterns in text format, and therefore when querying, casting
+    into Pythonic data types is required.  Ordering this page by cost required casting the cost from the db
+    into a floating point value prior to sorting. Hence the following in the views.py teas.templates.module:
+        .annotate(ordering=ExpressionWrapper(F("CostOz") + 0, output_field=FloatField()))
+    Creating this as a FloatField in the Django model itself would cause the integration with the sqlite database
+    to not recognize the column.
+    --Search String in views.py was set up with a helper function to allow further enhancement in the next release.
+    --Tea type filters on search page.  The following was implented in this manner to avoid exposing raw SQL, both
+    potentially open to SQL injection (though unlikely in this case given it currently references a multi-choice
+    fixed list) and is very database specific.  As implemented, requires a DBA only update the models.py file when 
+    the database changes and not necessarily require a web developer to update the views.py module.
+    --The search results and the tea lists are specifically designed to face the same HTML template to allow for
+    a single-update page for changes or enhancements for user look-and-feel.
+
+
+***********************************************************************************************************
+Technical Documentation - Sqlite Database
+***********************************************************************************************************
+Design explanations:
+    --Most fields are stored as text fields in sqlite.  Django allows for FloatField, IntegerField, 
+        DateTimeField, and BooleanField but they do not integrate with sqlite.  If used in one of the 
+        Django models, Django ignores them when generating the migration scripts.
+    --sqlite is used for the first release of this app for its versatility and transferability.  If the 
+        database expands greatly and finds a permanent host, a SQL Server or mySQL database may be
+        more suitable.
+    --Many of the ScraperDatabase.py functions include [0]["ID"] in the return functions.  This comes from
+        the cs50 db.execute functions returning unordered dictionaries.  If we were to re-write the connection 
+        library (via sqlite3 or pyodbc), would return lists instead and instantiate classes for each table
+        instead of returning dictionaries and then can be more specific with what is returned in these
+        functions.
+    --TeasTags stores individual tags and tea combinations.  If this table grows too large (unexpected),
+        could be split into one table per tag.  It is however expected that the tags would be split
+        into sub-tags (ex. Fruity into respective types of fruit).  Subtypes would be stored in a new table
+        that points to its parent tag (ex. Fruity) and TeasTags would then point to the subtypes table.
+    
+
+***********************************************************************************************************
+Next Steps
+***********************************************************************************************************
+    --More robust text search algorithm, possibly plugging in Hayneedle or some off-the-shelf search algo.
+    --Automatic assignment of tags to teas based on the name and description of teas already assigned.  A
+        basic machine learning algo could be employ the currently assigned tags to train for future assignements.
+    --Add more scraper templates and begin factoring out some of the functions as design patterns emerge.
+    --Add a company description
+    --Implement user logins and begin to save user preferences.

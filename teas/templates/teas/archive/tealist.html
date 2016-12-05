@@ -1,0 +1,25 @@
+{% extends "teas/baselayout.html" %}
+
+{% block pageheader %}
+    <h1>Search for Teas</h1>
+{% endblock %}
+
+{% block main %}
+    <div style="height:400px;overflow:auto;">
+        <table id="productsummary" class="productsummary">
+            <col width=125></col>
+            <col width=200></col>
+            <col width=600></col>
+            <th>Type</th>
+            <th>Name</th>
+            <th>Description</th>
+            {% for tea in tea_type_list %}
+                <tr>
+                    <td>{{ tea.TeaType }}</td>
+                    <td>{{ tea.TeaName }}</td>
+                    <td>{{ tea.TeaDescription }}</td>
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
+{% endblock %}

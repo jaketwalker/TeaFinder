@@ -1,0 +1,44 @@
+{% extends "teas/baselayout.html" %}
+
+{% block pageheader %}
+    <h3>{{ tea_type_filter }}</h3>
+{% endblock %}
+
+{% block main %}
+    <div>
+        <table id="productsummary">
+            {% for tea in tea_list %}
+                <tr>
+                    <td style="width:145px">
+                        <img src={{ tea.ImageURL }} width="125" style="margin-left:10px">
+                    </td>
+                    <td>
+                        <table id="productdetails">
+                            <tr>
+                                <td id="productname">{{ tea.TeaName }}</td>
+                            </tr>
+                            <tr>
+                                <td id="producttype">{{ tea.TeaType }}</td>
+                            </tr>
+                            <tr>
+                                <td class="productdescription">
+                                    {{ tea.TeaDescription }}
+                                    <a href={{ tea.SourceURL }} class="productcopyright">{{ tea.display_copyright_footer }}</a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="productcost">
+                                    Purchase:
+                                    <br>
+                                    <a href={{ tea.ProductURL }}>
+                                        {{ tea.SourceName }}: ${{ tea.display_cost }} / oz.
+                                    </a>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
+{% endblock %}

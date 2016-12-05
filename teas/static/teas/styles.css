@@ -1,0 +1,130 @@
+/*http://stackoverflow.com/questions/7025756/how-to-apply-global-font-to-whole-html-document*/
+html {
+    font-family: "Times New Roman", Times, serif !important;
+    height: 100%;
+}
+
+.navbar-default {
+    position: relative;
+    background-color: #033200;
+    font-weight: bold;
+    text-transform: capitalize;
+    letter-spacing: 0.25pt;
+}
+
+.navbar-default .navbar-nav > li > a {
+    line-height: 25px;
+    bottom: 0px;
+    text-align: center;
+    min-width: 100px;
+    max-width: 150px;
+    color: #F5FFF5;
+}
+
+#logo {
+    position: relative;
+    margin: 0;
+    top: 0;
+    height: 50px;
+}
+
+#body {
+    font-size: 10pt;
+    background-color: rgb(0, 0, 0);
+    background-color: #F5FFF5;
+    color: #033200;
+}
+
+#main {
+    margin-bottom: 60px;
+}
+
+#footer {
+    background-color: rgb(0, 0, 0);
+    background-color: #033200;
+    color: #F5FFF5;
+    font-size: 8pt;
+    padding: 8px 8px;
+}
+
+main #productsummary tr {
+    border: 1px solid black;
+    border-collapse: collapse;
+}
+
+main #productdetails tr {
+    border: none;
+}
+
+main #productdetails #productname {
+    font-size: 13pt;
+    font-weight: bold;
+    padding-top: 3pt;
+}
+
+main #productdetails #producttype {
+    font-weight: bold;
+    padding-bottom: 8pt;
+}
+
+main #productdetails .productdescription {
+    padding-bottom: 8px;
+}
+
+main #productdetails .productcopyright {
+    font-size: 8pt;
+    color: inherit;
+}
+
+main #productdetails .productcost {
+    padding-bottom: 6px;
+}
+
+main #productdetails .productcost > a {
+    padding-left: 2em;
+}
+
+
+
+SEARCH PAGE
+main #searchbox {
+    margin-left: 10%;
+    margin-right: 50%;
+}
+
+main #left-column {
+    float: left;
+    width: 50%;
+}
+
+main #right-column {
+    float: left;
+    width: 50%;
+}
+
+#searchbox .multiple-select {
+    width: auto;
+    min-width: 150px;
+    max-width: 250px;
+    
+    height: auto;
+    min-height: 100px;
+    max-height: 150px;
+}
+
+#searchbox .search-text {
+    width: 100%;
+}
+
+#searchbox .search-button-div {
+    width: 100%;
+}
+
+#searchbox .search-button {
+    background-color: #033200;
+    color: #F5FFF5;
+}
+
+#searchbox .checkboxes {
+    width: 100%;
+}

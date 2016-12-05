@@ -1,0 +1,49 @@
+DROP TABLE TeasSources;
+DROP TABLE Teas;
+DROP TABLE Sources;
+DROP TABLE TeaTypes;
+
+
+CREATE TABLE TeaTypes (
+    ID INTEGER PRIMARY KEY AUTOINCREMENT,
+    TeaType TEXT NOT NULL,
+    UNIQUE(TeaType)
+);
+
+CREATE TABLE Teas (
+    ID INTEGER PRIMARY KEY AUTOINCREMENT,
+    Name TEXT NOT NULL,
+    TeaTypeID INTEGER NOT NULL,
+    Description TEXT NOT NULL,
+    UNIQUE(Name),
+    FOREIGN KEY (TeaTypeID) REFERENCES TeaTypes(ID)
+);
+
+CREATE TABLE Sources (
+    ID INTEGER PRIMARY KEY AUTOINCREMENT,
+    SourceName TEXT NOT NULL,
+    UNIQUE(SourceName)
+);
+
+CREATE TABLE TeasSources (
+    ID INTEGER PRIMARY KEY AUTOINCREMENT,
+    TeaID INTEGER NOT NULL,
+    SourceID INTEGER NOT NULL,
+    ProductID TEXT NOT NULL,
+    CostOz REAL NOT NULL,
+    URL TEXT NOT NULL,
+    IsAvailable BOOL NOT NULL DEFAULT 1,
+    UNIQUE(SourceID, ProductID),
+    UNIQUE(TeaID, SourceID, ProductID),
+    FOREIGN KEY (TeaID) REFERENCES Teas (ID),
+    FOREIGN KEY (SourceID) REFERENCES Sources (ID)
+);
+
+INSERT INTO TeaTypes (TeaType) VALUES ("Black Tea");
+INSERT INTO TeaTypes (TeaType) VALUES ("Green Tea");
+INSERT INTO TeaTypes (TeaType) VALUES ("Herbal Tea");
+INSERT INTO TeaTypes (TeaType) VALUES ("Oolong Tea");
+INSERT INTO TeaTypes (TeaType) VALUES ("White Tea");
+
+INSERT INTO Sources (SourceName) VALUES ("TeaSource");
+INSERT INTO Sources (SourceName) VALUES ("Camellia Sinensis");
